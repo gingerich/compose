@@ -1,10 +1,11 @@
 {
-  "name": "koa-compose",
-  "description": "compose Koa middleware",
-  "repository": "koajs/compose",
-  "version": "4.0.0",
+  "name": "purposejs",
+  "description": "compose pure functions",
+  "repository": "gingerich/purpose",
+  "version": "0.0.1",
   "keywords": [
-    "koa",
+    "pure",
+    "function",
     "middleware",
     "compose"
   ],
