@@ -366,7 +366,7 @@ describe('purpose.wrap()', function () {
     const stack = []
 
     stack.push(async (ctx, next) => {
-      return next({ ...ctx, a: 1 })
+      return next(Object.assign({}, ctx, { a: 1 }))
     })
 
     stack.push(compose.wrap(async (ctx, next) => {
@@ -387,7 +387,7 @@ describe('purpose.wrap()', function () {
     }))
 
     stack.push(async (ctx, next) => {
-      return next({ ...ctx, a: 1 })
+      return next(Object.assign({}, ctx, { a: 1 }))
     })
 
     const result = await compose(stack)({})
