@@ -2,7 +2,7 @@
   "name": "purposejs",
   "description": "compose pure functions",
   "repository": "gingerich/purpose",
-  "version": "0.0.1",
+  "version": "4.0.0",
   "keywords": [
     "pure",
     "function",
