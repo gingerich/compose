@@ -13,7 +13,7 @@ function isPromise (x) {
   return x && typeof x.then === 'function'
 }
 
-describe('Koa Compose', function () {
+describe('Purpose.js', function () {
   it('should work', async () => {
     const arr = []
     const stack = []
@@ -52,7 +52,7 @@ describe('Koa Compose', function () {
     stack.push(async (context, next) => {
       context.arr.push(1)
       await wait(1)
-      await next()
+      await next(context)
       await wait(1)
       context.arr.push(6)
     })
@@ -60,7 +60,7 @@ describe('Koa Compose', function () {
     stack.push(async (context, next) => {
       context.arr.push(2)
       await wait(1)
-      await next()
+      await next(context)
       await wait(1)
       context.arr.push(5)
     })
@@ -68,7 +68,7 @@ describe('Koa Compose', function () {
     stack.push(async (context, next) => {
       context.arr.push(3)
       await wait(1)
-      await next()
+      await next(context)
       await wait(1)
       context.arr.push(4)
     })
@@ -161,29 +161,6 @@ describe('Koa Compose', function () {
     })
 
     return compose(stack)({})
-  })
-
-  it('should keep the context', () => {
-    const ctx = {}
-
-    const stack = []
-
-    stack.push(async (ctx2, next) => {
-      await next()
-      expect(ctx2).toEqual(ctx)
-    })
-
-    stack.push(async (ctx2, next) => {
-      await next()
-      expect(ctx2).toEqual(ctx)
-    })
-
-    stack.push(async (ctx2, next) => {
-      await next()
-      expect(ctx2).toEqual(ctx)
-    })
-
-    return compose(stack)(ctx)
   })
 
   it('should catch downstream errors', async () => {
@@ -334,7 +311,7 @@ describe('Koa Compose', function () {
   it('should not get stuck on the passed in next', () => {
     const middleware = [(ctx, next) => {
       ctx.middleware++
-      return next()
+      return next(ctx)
     }]
     const ctx = {
       middleware: 0,
@@ -343,9 +320,77 @@ describe('Koa Compose', function () {
 
     return compose(middleware)(ctx, (ctx, next) => {
       ctx.next++
-      return next()
+      return next(ctx)
     }).then(() => {
       expect(ctx).toEqual({ middleware: 1, next: 1 })
     })
+  })
+
+  it('should work with pure functions', () => {
+    const stack = []
+
+    stack.push(async (ctx, next) => {
+      const result = await next({ a: 1 })
+      expect(result).toBe(undefined)
+    })
+
+    stack.push(async (ctx, next) => {
+      const result = await next({ b: ctx.a + 1 })
+      expect(result).toEqual({ c: 3 })
+    })
+
+    stack.push(async (ctx, next) => {
+      const result = await next({ c: ctx.b + 1 })
+      expect(result).toEqual({ c: 3 })
+      return result
+    })
+
+    return compose(stack)({})
+  })
+})
+
+
+describe('purpose.wrap()', function () {
+  it('should work with koa middleware functions', async () => {
+    const pure = compose.wrap(async (ctx, next) => {
+      ctx.a = 1
+      await next()
+      ctx.b = 2
+    })
+
+    const result = await pure({}, ctx => ctx)
+    expect(result).toEqual({ a: 1, b: 2 })
+  })
+
+  it('should handle functions mutating context without returning', async () => {
+    const stack = []
+
+    stack.push(async (ctx, next) => {
+      return next({ ...ctx, a: 1 })
+    })
+
+    stack.push(compose.wrap(async (ctx, next) => {
+      ctx.a++
+    }))
+
+    const result = await compose(stack)({})
+    expect(result).toEqual({ a: 2 })
+  })
+
+  // Currently unhandled
+  it.skip('should handle functions expecting context mutation', async () => {
+    const stack = []
+
+    stack.push(compose.wrap(async (ctx, next) => {
+      await next()
+      return ctx
+    }))
+
+    stack.push(async (ctx, next) => {
+      return next({ ...ctx, a: 1 })
+    })
+
+    const result = await compose(stack)({})
+    expect(result).toEqual({ a: 1 })
   })
 })
