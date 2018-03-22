@@ -56,6 +56,10 @@ $ npm i purposejs
 ## License
 
   MIT
+  
+### Acknowledgements
+
+This is a fork of [koa-compose@4.0.0](https://github.com/koajs/compose/tree/4.0.0) under the MIT license.
 
 [npm-image]: https://img.shields.io/npm/v/purposejs.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/purposejs
