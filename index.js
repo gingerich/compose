@@ -32,21 +32,19 @@ function purpose (middleware) {
   return function (context, next) {
     // last called middleware #
     let index = -1
-    return dispatch(0)(context)
-    function dispatch (i) {
-      return function (ctx) {
-        if (i <= index) return Promise.reject(new Error('next() called multiple times'))
-        index = i
-        let fn = middleware[i]
-        if (i === middleware.length) fn = next
-        if (!fn) return Promise.resolve(ctx)
-        try {
-          return Promise.resolve(fn(ctx, function next (ctx) {
-            return dispatch(i + 1)(ctx)
-          }))
-        } catch (err) {
-          return Promise.reject(err)
-        }
+    return dispatch(0, context)
+    function dispatch (i, ctx) {
+      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+      index = i
+      let fn = middleware[i]
+      if (i === middleware.length) fn = next
+      if (!fn) return Promise.resolve(ctx)
+      try {
+        return Promise.resolve(fn(ctx, function next (ctx) {
+          return dispatch(i + 1, ctx)
+        }))
+      } catch (err) {
+        return Promise.reject(err)
       }
     }
   }
