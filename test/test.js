@@ -13,7 +13,7 @@ function isPromise (x) {
   return x && typeof x.then === 'function'
 }
 
-describe('Koa Compose', function () {
+describe('Purpose.js', function () {
   it('should work', async () => {
     const arr = []
     const stack = []
