@@ -12,46 +12,14 @@ A middleware composition tool for pure functions.
 ## Installation
 
 ```js
-$ npm i purposejs
+$ npm install purposejs
 ```
 
 ## API
 
-### purpose([a, b, c, ...])
+### compose([a, b, c, ...])
 
-  Compose the given middleware functions and return a middleware function.
-  
-### purpose.wrap(impureMiddlewareFn)
-
-  Wraps an "impure" middleware function to be compatible with Purpose.js
-  
-  ```js
-  const pure = purpose.wrap(ctx => {
-   ctx.a = 1
-   return next()
-  })
-  purpose([pure])({}) // => { a: 1 }
-  ```
-
-## Pure middleware function
-
-#### Function(data:Object, next:Function) => Promise[Object]
-
-```js
-(data, next) => next({ ...data }).then(res => res)
-```
-
-#### data : Object
-
-  The input data for the function to act on
-  
-#### next : Function(data : Object) => Promise[Object]
-
-  Passes control to the next middleware function with `data` as its input
-  
-#### Return value
-
-  A promise that resolves to an Object
+  Compose the given middleware and return middleware.
 
 ## License
 
@@ -59,7 +27,7 @@ $ npm i purposejs
   
 ### Acknowledgements
 
-This is a fork of [koa-compose@4.0.0](https://github.com/koajs/compose/tree/4.0.0) under the MIT license.
+This is a fork of [koa-compose](https://github.com/koajs/compose) under the MIT license.
 
 [npm-image]: https://img.shields.io/npm/v/purposejs.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/purposejs

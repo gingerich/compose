@@ -5,7 +5,6 @@
   "version": "5.0.0",
   "keywords": [
     "pure",
-    "function",
     "middleware",
     "compose"
   ],
